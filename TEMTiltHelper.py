@@ -3,14 +3,31 @@ from transforms3d.quaternions import qinverse, quat2mat
 
 # TODO: Using polar coordinates would be much more elegant...would only need 2x2 rotation matrix
 
+"""
+Introduction
+In the TEM it can be hard to find the proper zone axis that we are interested in. Often, we can get to some initial 
+zone axis, but then to get to one that we are interested in, we have to navigate reciprocal space (by tilting) while
+compensating for drifting of the sample out of the electron beam etc. This makes finding the zone axis that we are
+interested in very long and tedious, sometimes seemingly impossible.
+
+This tool uses math to try and make this process much quicker and convenient. The idea is that the user will have found 
+some initial known zone axis and will have identified the relevant diffraction spots (directions) in the crystal. This 
+unambiguously defines the orientation of the crystal in 3D space. Knowing this, the user inputs the zone axis that they 
+would like to go to and this program computes the required alpha and beta tilt to reach the desired zone axis. The user
+can then use these as "directions" to find the zone axis they are interested in.
+
+The inputs to the code are the initial known zone axis, a known crystal direction, the (clockwise) angle from vertical
+to this known direction (taken from a diffraction pattern) and finally the zone axis that they would like to reach.
+
+The outputs are the angle in alpha and beta to tilt the specimen to reach the desired zone axis.
+"""
+
 ######################################################
 # Inputs to the program
 ZA = np.array([-1, 0, -1])  # Current zone-axis
 D = np.array([0., 1, 0])  # Known direction in this zone axis (from diffraction pattern)
 DA = -10  # Angle to the vertical of the known direction (degrees, clockwise)
 ZA2 = np.array([1, 1, -1])  # Desired zone axis
-
-
 #####################################################
 
 def is_rot_matrix(r_mat):
