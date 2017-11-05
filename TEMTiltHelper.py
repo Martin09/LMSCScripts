@@ -1,5 +1,5 @@
 import numpy as np
-from transforms3d.quaternions import qinverse, quat2mat
+from transforms3d.quaternions import quat2mat
 
 # TODO: Using polar coordinates would be much more elegant...would only need 2x2 rotation matrix
 
@@ -28,6 +28,8 @@ ZA = np.array([-1, 0, -1])  # Current zone-axis
 D = np.array([0., 1, 0])  # Known direction in this zone axis (from diffraction pattern)
 DA = -10  # Angle to the vertical of the known direction (degrees, clockwise)
 ZA2 = np.array([1, 1, -1])  # Desired zone axis
+
+
 #####################################################
 
 def is_rot_matrix(r_mat):
@@ -167,13 +169,9 @@ angle = angle_between_vectors(ZA, ZA2)
 axis = np.cross(ZA, ZA2)
 R2 = rotation_matrix(axis, angle)
 
-# Determine quaternion that transforms from TEM coordinate system to crystal coordinate system
-q_12 = get_quaternion([x1, y1, z1], [x2, y2, z2])
-q_21 = qinverse(q_12)
-
-# Convert this quaternion to a basis change (rotation) matrix
-B_1to2 = quat2mat(q_12)
-B_2to1 = quat2mat(q_21)
+# Determine quaternion that transforms from TEM coordinate system to crystal coordinate system, convert it to rot matrix
+B_1to2 = quat2mat(get_quaternion([x1, y1, z1], [x2, y2, z2]))
+B_2to1 = np.linalg.inv(B_1to2)  # Calculate the inverse transformation
 
 # Calculate rotation matrix in TEM coordinates
 # by using change of basis matrices and previous rotation matrix in crystal coordinates
